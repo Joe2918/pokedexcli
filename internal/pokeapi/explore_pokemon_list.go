@@ -2,48 +2,46 @@ package pokeapi
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 )
 
 // List Pokemon in the area -
 
-func (c *Client) ListPokemon(area string) (RespShallowPokemon, error) {
+func (c *Client) ListPokemon(area string) (Location, error) {
 	url := baseURL + "/location-area/" + area
 
 	if val, ok := c.cache.Get(url); ok {
-		pokemonResp := RespShallowPokemon{}
-		err := json.Unmarshal(val, &pokemonResp)
+		locationResp := Location{}
+		err := json.Unmarshal(val, &locationResp)
 		if err != nil {
-			return RespShallowPokemon{}, err
+			return Location{}, err
 		}
-		fmt.Println("CACHING SUCCES")
-		return pokemonResp, nil
+		return locationResp, nil
 	}
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return RespShallowPokemon{}, err
+		return Location{}, err
 	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return RespShallowPokemon{}, nil
+		return Location{}, nil
 	}
 
 	defer resp.Body.Close()
 
 	dat, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return RespShallowPokemon{}, nil
+		return Location{}, nil
 	}
-	pokemonResp := RespShallowPokemon{}
-	err = json.Unmarshal(dat, &pokemonResp)
+	locationResp := Location{}
+	err = json.Unmarshal(dat, &locationResp)
 	if err != nil {
-		return RespShallowPokemon{}, err
+		return Location{}, err
 	}
 
 	c.cache.Add(url, dat)
-	return pokemonResp, nil
+	return locationResp, nil
 }
