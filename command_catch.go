@@ -19,7 +19,7 @@ func commandCatch(cfg *config, args ...string) error {
 	res := rand.Intn(pokemonResp.BaseExperience)
 
 	fmt.Printf("Throwing a Pokeball at %v...\n", pokemonResp.Name)
-	fmt.Println(res)
+
 	if res > 65 {
 		fmt.Printf("%v escaped!\n", pokemonResp.Name)
 		return nil
